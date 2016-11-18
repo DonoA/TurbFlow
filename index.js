@@ -1,3 +1,5 @@
+// Radius = 1m
+// Length = 4m
 var visc = 1;
 var flowrat = 1;
 var temp = 293;
