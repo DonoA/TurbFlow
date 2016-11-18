@@ -4,6 +4,10 @@ var visc = 1;
 var flowrat = 1;
 var temp = 293;
 
+function drawFrame(){
+  
+}
+
 // dp1-dp2
 function calcPressureDiff(temp, flow){
   let b = 4.458*Math.pow(10, -6);
