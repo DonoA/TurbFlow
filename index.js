@@ -4,8 +4,32 @@ var visc = 1;
 var flowrat = 1;
 var temp = 293;
 
+var pen;
+
+var canWid;
+var canHigh;
+
+function init(){
+  var canWid = window.innerWidth*0.49;
+  var canHighwindow.innerHeight;
+  var w = window.innerWidth;
+  var h = window.innerHeight;
+  pen = document.getElementById("diag").getContext("2d");
+  canWid = document.getElementById("diag").scrollWidth;
+  canHigh = document.getElementById("diag").scrollHeight;
+  drawFrame();
+}
+
 function drawFrame(){
-  
+  pen.strokeStyle = "#111";
+  //Top line of pipe
+  pen.moveTo(canWid*0.01, canHigh*0.01);
+  pen.lineTo(canWid*0.99, canHigh*0.01);
+  pen.stroke();
+  //Bottom line of pipe
+  pen.moveTo(canWid*0.1, canHigh*0.9);
+  pen.lineTo(canWid*0.9, canHigh*0.9);
+  pen.stroke();
 }
 
 // dp1-dp2
