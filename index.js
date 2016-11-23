@@ -64,11 +64,15 @@ function addParticle(){
       x: canWid*0.1,
       y: canHigh*0.5
     },
-    vec: {
-      x: 2,
-      y: 0
-    }
-  })
+    vec: calcVec()
+  });
+}
+
+function calcVec(){
+  return {
+    x:2,
+    y:0
+  };
 }
 
 // dp1-dp2
