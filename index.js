@@ -5,31 +5,70 @@ var flowrat = 1;
 var temp = 293;
 
 var pen;
-
 var canWid;
 var canHigh;
 
+var particles = [];
+
 function init(){
-  var canWid = window.innerWidth*0.49;
-  var canHighwindow.innerHeight;
-  var w = window.innerWidth;
-  var h = window.innerHeight;
+  canWid = window.innerWidth*0.49;
+  canHigh = window.innerHeight*0.5;
+  document.getElementById("diag").width = canWid;
+  document.getElementById("diag").height = canHigh;
   pen = document.getElementById("diag").getContext("2d");
-  canWid = document.getElementById("diag").scrollWidth;
-  canHigh = document.getElementById("diag").scrollHeight;
   drawFrame();
+  setInterval(tick(), 10);
 }
 
 function drawFrame(){
+  pen.fillStyle = "#0000ff";
   pen.strokeStyle = "#111";
+  pen.lineWidth=5;
+  //Liquid in pipe
+  pen.fillRect(canWid*0.1,canHigh*0.1,canWid*0.8,canHigh*0.8);
   //Top line of pipe
-  pen.moveTo(canWid*0.01, canHigh*0.01);
-  pen.lineTo(canWid*0.99, canHigh*0.01);
+  pen.moveTo(canWid*0.1, canHigh*0.1);
+  pen.lineTo(canWid*0.9, canHigh*0.1);
   pen.stroke();
   //Bottom line of pipe
   pen.moveTo(canWid*0.1, canHigh*0.9);
   pen.lineTo(canWid*0.9, canHigh*0.9);
   pen.stroke();
+  //Draw particles
+  pen.fillStyle = "#ff0000";
+  pen.strokeStyle = "#ff0000";
+  particles.forEach(function(e){
+    pen.beginPath();
+    pen.arc(e.pos.x, e.pos.y, 2, 0, Math.PI*2);
+    pen.fill();
+  });
+}
+
+function tick(){
+  particles.forEach(function(e){
+    e.pos.x = e.pos.x + e.vec.x;
+    e.pos.y = e.pos.y + e.vec.y;
+  });
+  particles.filter(function(e){
+    return e.pos.x > canWid*0.9;
+  });
+  if(Math.random() <= 0.01){ // 1% chance
+    addParticle();
+  }
+  drawFrame();
+}
+
+function addParticle(){
+  particles.push({
+    pos: {
+      x: canWid*0.1,
+      y: canHigh*0.5
+    },
+    vec: {
+      x: 2,
+      y: 0
+    }
+  })
 }
 
 // dp1-dp2
