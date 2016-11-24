@@ -62,16 +62,25 @@ function addParticle(){
   particles.push({
     pos: {
       x: canWid*0.1,
-      y: canHigh*0.5
+      y: Math.random()*canHigh*0.9+canHigh*0.1 // random y cord in the pipe
     },
     vec: calcVec()
   });
 }
 
 function calcVec(){
+  let mag = vMag(
+    1,
+    parseInt(document.getElementById("visc").value),
+    calcPressureDiff(
+      500*(parseInt(document.getElementById("temp").value)/100),
+      parseInt(document.getElementById("flow").value)/10
+    )
+  );
+  let dir = vDir(100, mag);
   return {
-    x:2,
-    y:0
+    x:Math.cos(dir)*mag,
+    y:Math.sin(dir)*mag
   };
 }
 
@@ -94,6 +103,7 @@ function vDir(vTurb, vloc){
   if(vTurb > vloc){
     return 0;
   }else{
+    //This is all that still needs to be done, and debug that is
     throw "lol nope!";
   }
 }
