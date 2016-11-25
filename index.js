@@ -1,5 +1,7 @@
 // Radius = 1m
 // Length = 4m
+// RE is taken as 2000
+// density = 1
 var pen;
 var canWid;
 var canHigh;
@@ -56,6 +58,11 @@ function tick(){
     addParticle();
   }
   drawFrame();
+  document.getElementById("stemp").innerHTML = temp();
+  document.getElementById("sflow").innerHTML = flow();
+  document.getElementById("svisc").innerHTML = visc();
+  document.getElementById("spress").innerHTML = press();
+  document.getElementById("svcrit").innerHTML = vcrit();
 }
 
 function addParticle(){
@@ -72,7 +79,6 @@ function addParticle(){
 function calcVec(pos){
   let r = (Math.abs(pos.y-canHigh*0.5))/(canHigh*0.5);
   let mag = vMag(r);
-  // let mag = vMag(0.5);
   let dir = vDir(100, mag);
   return {
     x:Math.cos(dir)*mag,
@@ -85,11 +91,16 @@ function temp(){
 }
 
 function flow(){
-  return parseInt(document.getElementById("flow").value)/5;
+  return parseInt(document.getElementById("flow").value)*1000;
 }
 
 function visc(){
-  return parseInt(document.getElementById("visc").value)
+  return parseInt(document.getElementById("visc").value)/100;
+}
+
+function vcrit(){
+  // return (2000*visc())/(2);
+  return 500*visc();
 }
 
 // dp1-dp2
@@ -102,12 +113,12 @@ function press(){
 
 // speed of the particle
 function vMag(r){
-  return ((press()-(press()*Math.pow(r, 2)))/(16*visc()))*Math.pow(10, 6);
+  return ((press()-(press()*Math.pow(r, 2)))/(16*visc()));
 }
 
 // returns theta for the direction of the particle
-function vDir(vTurb, vloc){
-  if(vTurb > vloc){
+function vDir(vloc){
+  if(vcrit() > vloc){
     return 0;
   }else{
     //This is all that still needs to be done, and debug that is
