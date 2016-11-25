@@ -12,6 +12,7 @@ function init(){
   document.getElementById("diag").width = canWid;
   document.getElementById("diag").height = canHigh;
   pen = document.getElementById("diag").getContext("2d");
+  addParticle();
   drawFrame();
   setInterval(tick, 10);
 }
@@ -51,7 +52,7 @@ function tick(){
   particles = particles.filter(function(e){
     return e.pos.x < canWid*0.9-15;
   });
-  if(Math.random() <= 0.01){ // 1% chance
+  if(Math.random() <= 0.05){ // 1% chance
     addParticle();
   }
   drawFrame();
@@ -60,7 +61,7 @@ function tick(){
 function addParticle(){
   let pos = {
     x: canWid*0.1+15,
-    y: Math.random()*canHigh*0.75+canHigh*0.15 // random y cord in the pipe
+    y: Math.random()*canHigh*0.7+canHigh*0.15 // random y cord in the pipe
   };
   particles.push({
     pos: pos,
@@ -69,8 +70,9 @@ function addParticle(){
 }
 
 function calcVec(pos){
-  // let mag = vMag((Math.abs(pos.y-canWid*0.5))/(canWid*0.5));
-  let mag = vMag(0.5);
+  let r = (Math.abs(pos.y-canHigh*0.5))/(canHigh*0.5);
+  let mag = vMag(r);
+  // let mag = vMag(0.5);
   let dir = vDir(100, mag);
   return {
     x:Math.cos(dir)*mag,
@@ -83,7 +85,7 @@ function temp(){
 }
 
 function flow(){
-  return parseInt(document.getElementById("flow").value)/10;
+  return parseInt(document.getElementById("flow").value)/5;
 }
 
 function visc(){
