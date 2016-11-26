@@ -1,68 +1,69 @@
-<html><head>
-        <title>Flow Sim</title>
-        <script src="index.js" type="text/javascript"></script>
-        <style>
-        html, body {
-          margin: 0;
-          height: 100%;
-          text-align: center;
-        }
-        canvas{
-          height: 50%;
-          border:1px solid #282828;
-          display: inline;
-          background-color: lightgoldenrodyellow;
-        }
-        table{
-          display: inline;
-          border-spacing: 75 1em;
-        }
-        </style>
-    </head>
-    <body onload="init()">
-        <br>
-        <canvas id="diag">
-            Your browser does not support canvas, use chrome, firefox, or safari
-        </canvas>
-        <div>
-          <table>
-            <tr>
-              <td>
-                <span>
-                  Current Variables:
-                  <br>
-                  <ul>
-                    <li>Pipe Radius: 1 meter</li>
-                    <li>Pipe Length: 4 meters</li>
-                    <li>Reynolds Number: 2000</li>
-                    <li>Density: 1</li>
-                    <li>Temperature: <span id="stemp"></span></li>
-                    <li>Flow Rate: <span id="sflow"></span></li>
-                    <li>Viscocity: <span id="svisc"></span></li>
-                    <li>Pressure: <span id="spress"></span></li>
-                    <li>Vcrit: <span id="svcrit"></span></li>
-                    <li>Flow Type: <span id="sft"></span></li>
-                    <li>FPS: <span id="fps"></span></li>
-                  </ul>
-
-                </span>
-              </td>
-              <td>
-                <input id="visc" type="range" defaultValue="75">
-                <br>
-                Viscocity
-              </td>
-              <td>
-                <input id="flow" type="range">
-                <br>
-                Flow Rate
-              </td>
-              <td>
-                <input id="temp" type="range">
-                <br>
-                Temperature
-              </td>
-            </tr>
-          </table>
-        </div>
-</body></html>
+<html>
+  <head>
+    <title>Flow Sim</title>
+    <script src="index.js" type="text/javascript"></script>
+    <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      text-align: center;
+    }
+    canvas{
+      height: 50%;
+      border:1px solid #282828;
+      display: inline;
+      background-color: lightgoldenrodyellow;
+    }
+    table{
+      display: inline;
+      border-spacing: 75 1em;
+    }
+    </style>
+  </head>
+  <body onload="init()">
+    <br>
+    <canvas id="diag">
+        Your browser does not support canvas, use chrome, firefox, or safari
+    </canvas>
+    <div>
+      <table>
+        <tr>
+          <td>
+            <span>
+              Current Variables:
+              <br>
+              <ul>
+                <li>Pipe Radius: 1 meter</li>
+                <li>Pipe Length: 4 meters</li>
+                <li>Reynolds Number: 2000</li>
+                <li>Density: 1</li>
+                <li>Temperature: <span id="stemp"></span></li>
+                <li>Flow Rate: <span id="sflow"></span></li>
+                <li>Viscocity: <span id="svisc"></span></li>
+                <li>Pressure: <span id="spress"></span></li>
+                <li>Vcrit: <span id="svcrit"></span></li>
+                <li>Flow Type: <span id="sft"></span></li>
+                <li>FPS: <span id="fps"></span></li>
+              </ul>
+            </span>
+          </td>
+          <td>
+            <input id="visc" type="range" defaultValue="75">
+            <br>
+            Viscocity
+          </td>
+          <td>
+            <input id="flow" type="range">
+            <br>
+            Flow Rate
+          </td>
+          <td>
+            <input id="temp" type="range">
+            <br>
+            Temperature
+          </td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>
