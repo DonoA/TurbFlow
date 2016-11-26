@@ -10,6 +10,12 @@ var particles = [];
 
 var eddies = [];
 
+var debug = {
+  eddies : false,
+  turb: false,
+  autoSpawn: true
+};
+
 function init(){
   canWid = window.innerWidth*0.49;
   canHigh = window.innerHeight*0.5;
@@ -19,12 +25,13 @@ function init(){
   addParticle();
   drawFrame();
   setInterval(tick, 10);
-  for(int i = 0; i <= 10; i++){
+  for(var i = 0; i <= 10; i = i+1){
     let rad1 = Math.random()*canHigh*0.07+canHigh*0.07;
-    let rad2 = Math.random()*canHigh*0.1+rad;
+    let rad2 = Math.random()*canHigh*0.1+rad1;
     let newEd;
+    let valid = true;
     do {
-      let valid = true;
+      valid = true;
       newEd = {
         pos:{
           x: Math.random()*canWid*0.7+canWid*0.15,
@@ -41,6 +48,10 @@ function init(){
     } while(!valid)
     eddies.push(newEd);
   }
+}
+
+function dist(pos1, pos2){
+  return Math.sqrt(Math.pow((pos1.x-pos2.x), 2) + Math.pow((pos1.y-pos2.y), 2));
 }
 
 function drawFrame(){
@@ -67,6 +78,17 @@ function drawFrame(){
     pen.stroke();
     pen.fill();
   });
+  if(debug.eddies){
+    eddies.forEach(function(e){
+      pen.fillStyle = "#000000";
+      pen.strokeStyle = "#000000";
+      pen.beginPath();
+      pen.arc(e.pos.x, e.pos.y, 2, 0, Math.PI*2, false);
+      pen.closePath();
+      pen.stroke();
+      pen.fill();
+    });
+  }
 }
 
 function tick(){
@@ -78,7 +100,7 @@ function tick(){
   particles = particles.filter(function(e){
     return e.pos.x < canWid*0.9-15;
   });
-  if(Math.random() <= 0.05){ // 1% chance
+  if(Math.random() <= 0.05 && debug.autoSpawn){ // 1% chance
     addParticle();
   }
   drawFrame();
@@ -87,6 +109,11 @@ function tick(){
   document.getElementById("svisc").innerHTML = visc();
   document.getElementById("spress").innerHTML = press();
   document.getElementById("svcrit").innerHTML = vcrit();
+  if(vcrit() < vMag(0) || debug.turb){
+    document.getElementById("sft").innerHTML = "Turbulent";
+  }else{
+    document.getElementById("sft").innerHTML = "Laminar";
+  }
 }
 
 function addParticle(){
@@ -103,7 +130,7 @@ function addParticle(){
 function calcVec(pos){
   let r = (Math.abs(pos.y-canHigh*0.5))/(canHigh*0.5);
   let mag = vMag(r);
-  if(vcrit() > mag){
+  if(vcrit() > mag || debug.turb){
     return {
       x: mag,
       y: 0
@@ -112,11 +139,11 @@ function calcVec(pos){
     //This is all that still needs to be done
     let handled = false;
     eddies.forEach(function(e){
-      let dist = dist(pos, e.pos);
+      let dst = dist(pos, e.pos);
 
-      if(dist < e.r1){
+      if(dst < e.r1){
         // circle
-        let theta = Math.arcsin(dist/Math.abs(pos.y-e.pos.y));
+        let theta = Math.asin(dst/Math.abs(pos.y-e.pos.y));
         if(pos.x > e.pos.x){
           theta = Math.PI - theta;
         }
@@ -124,9 +151,9 @@ function calcVec(pos){
           x: -mag*Math.sin(theta),
           y: mag*Math.cos(theta)
         };
-      }else if(dist < e.r2){
+      }else if(dst < e.r2){
         // push around
-        let theta = Math.arcsin(dist/Math.abs(pos.y-e.pos.y));
+        let theta = Math.asin(dst/Math.abs(pos.y-e.pos.y));
         if(pos.x > e.pos.x){
           theta = Math.PI - theta;
         }
@@ -163,7 +190,7 @@ function visc(){
 }
 
 function vcrit(){
-  return 500*visc();
+  return 10*visc();
 }
 
 // dp1-dp2
@@ -177,13 +204,4 @@ function press(){
 // speed of the particle
 function vMag(r){
   return ((press()-(press()*Math.pow(r, 2)))/(16*visc()));
-}
-
-// returns theta for the direction of the particle
-function vDir(vloc, pos){
-
-}
-
-function dist(pos1, pos2){
-  return Math.sqrt(Math.pow((pos1.x-pos2.x), 2) + Math.pow((pos1.y-pos2.y), 2));
 }
