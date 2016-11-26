@@ -40,6 +40,7 @@ function init(){
         },
         r1: rad1,
         r2: rad2,
+        dir: (Math.random() > 0.5 ? -1 : 1)
       };
       eddies.forEach(function(e){
         if(dist(newEd.pos, e.pos) < e.r2+newEd.r2){
@@ -161,18 +162,10 @@ function calcVec(pos){
           theta = (Math.PI*2) - theta;
         }
         console.log(theta/Math.PI);
-        debug.tick = false;
-        if(theta < Math.PI){
-          return {
-            x: -mag*Math.sin(theta),
-            y: mag*Math.cos(theta)
-          };
-        }else{
-          return {
-            x: mag*Math.sin(theta),
-            y: -mag*Math.cos(theta)
-          };
-        }
+        return {
+          x: e.dir*mag*Math.sin(theta+0.1),
+          y: e.dir*mag*Math.cos(theta+0.1)
+        };
       }else if(dst < e.r2){
         console.log("push");
         let theta = Math.acos((pos.x-e.pos.x)/dst);
@@ -181,24 +174,46 @@ function calcVec(pos){
         }
         console.log(theta/Math.PI);
         // debug.tick = false;
-        if(Math.abs(theta-Math.PI) < Math.PI/10 || Math.abs(theta) < Math.PI/10){
-          console.log("flat");
+        if(Math.abs(theta-Math.PI) < Math.PI/8){
+          console.log("enter");
           // debug.tick = false;
-          return {
-            x: -mag*Math.sin(theta),
-            y: mag*Math.cos(theta)
-          };
-        }else{
-          console.log("go");
-          if(theta < Math.PI){
+          if(theta > Math.PI){
             return {
-              x: -mag*Math.sin(theta),
-              y: mag*Math.cos(theta)
+              x: -mag*Math.sin(theta+0.4),
+              y: -mag*Math.cos(theta+0.4)
             };
           }else{
             return {
-              x: mag*Math.sin(theta),
-              y: -mag*Math.cos(theta)
+              x: mag*Math.sin(theta+0.4),
+              y: mag*Math.cos(theta+0.4)
+            };
+          }
+        }else if(Math.abs(theta) < Math.PI/4 || Math.abs(theta-(Math.PI*2)) < Math.PI/4){
+          console.log("esc");
+          // debug.tick = false;
+          if(theta > Math.PI){
+            return {
+              x: -mag*Math.sin(theta-0.5),
+              y: -mag*Math.cos(theta-0.5)
+            };
+          }else{
+            return {
+              x: mag*Math.sin(theta+0.5),
+              y: mag*Math.cos(theta+0.5)
+            };
+          }
+        }else{
+          console.log("go");
+          // debug.tick = false;
+          if(theta > Math.PI){
+            return {
+              x: -mag*Math.sin(theta+0.1),
+              y: -mag*Math.cos(theta+0.1)
+            };
+          }else{
+            return {
+              x: mag*Math.sin(theta-0.1),
+              y: mag*Math.cos(theta-0.1)
             };
           }
         }
