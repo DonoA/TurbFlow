@@ -8,6 +8,8 @@ var canHigh;
 
 var particles = [];
 
+var eddies = [];
+
 function init(){
   canWid = window.innerWidth*0.49;
   canHigh = window.innerHeight*0.5;
@@ -17,6 +19,28 @@ function init(){
   addParticle();
   drawFrame();
   setInterval(tick, 10);
+  for(int i = 0; i <= 10; i++){
+    let rad1 = Math.random()*canHigh*0.07+canHigh*0.07;
+    let rad2 = Math.random()*canHigh*0.1+rad;
+    let newEd;
+    do {
+      let valid = true;
+      newEd = {
+        pos:{
+          x: Math.random()*canWid*0.7+canWid*0.15,
+          y: Math.random()*canHigh*0.7+canHigh*0.15
+        },
+        r1: rad1,
+        r2: rad2,
+      };
+      eddies.forEach(function(e){
+        if(dist(newEd.pos, e.pos) < e.r2+newEd.r2){
+          valid = false;
+        }
+      });
+    } while(!valid)
+    eddies.push(newEd);
+  }
 }
 
 function drawFrame(){
@@ -79,11 +103,51 @@ function addParticle(){
 function calcVec(pos){
   let r = (Math.abs(pos.y-canHigh*0.5))/(canHigh*0.5);
   let mag = vMag(r);
-  let dir = vDir(100, mag);
-  return {
-    x:Math.cos(dir)*mag,
-    y:Math.sin(dir)*mag
-  };
+  if(vcrit() > mag){
+    return {
+      x: mag,
+      y: 0
+    };
+  }else{
+    //This is all that still needs to be done
+    let handled = false;
+    eddies.forEach(function(e){
+      let dist = dist(pos, e.pos);
+
+      if(dist < e.r1){
+        // circle
+        let theta = Math.arcsin(dist/Math.abs(pos.y-e.pos.y));
+        if(pos.x > e.pos.x){
+          theta = Math.PI - theta;
+        }
+        return {
+          x: -mag*Math.sin(theta),
+          y: mag*Math.cos(theta)
+        };
+      }else if(dist < e.r2){
+        // push around
+        let theta = Math.arcsin(dist/Math.abs(pos.y-e.pos.y));
+        if(pos.x > e.pos.x){
+          theta = Math.PI - theta;
+        }
+        if(theta < Math.PI/10 || theta > Math.PI*(19/10)){
+          return {
+            x: (-mag*Math.sin(theta))*10,
+            y: (mag*Math.cos(theta))/10
+          };
+        }else{
+          return {
+            x: -mag*Math.sin(theta),
+            y: mag*Math.cos(theta)
+          };
+        }
+      }
+    });
+    return {
+      x: mag,
+      y: 0
+    };
+  }
 }
 
 function temp(){
@@ -99,7 +163,6 @@ function visc(){
 }
 
 function vcrit(){
-  // return (2000*visc())/(2);
   return 500*visc();
 }
 
@@ -117,11 +180,10 @@ function vMag(r){
 }
 
 // returns theta for the direction of the particle
-function vDir(vloc){
-  if(vcrit() > vloc){
-    return 0;
-  }else{
-    //This is all that still needs to be done, and debug that is
-    throw "lol nope!";
-  }
+function vDir(vloc, pos){
+
+}
+
+function dist(pos1, pos2){
+  return Math.sqrt(Math.pow((pos1.x-pos2.x), 2) + Math.pow((pos1.y-pos2.y), 2));
 }
