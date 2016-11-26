@@ -11,9 +11,9 @@ var particles = [];
 var eddies = [];
 
 var debug = {
-  eddies : !false,
-  turb: !false,
-  autoSpawn: !true,
+  eddies : false,
+  turb: false,
+  autoSpawn: true,
   tick: true
 };
 
@@ -26,12 +26,14 @@ function init(){
   addParticle();
   drawFrame();
   setInterval(tick, 10);
-  for(let i = 0; i <= 10; i = i+1){
+  let tries = 50;
+  for(let i = 0; i < 10 && tries > 0; i = i+1){
     let rad1 = Math.random()*canHigh*0.07+canHigh*0.07;
     let rad2 = Math.random()*canHigh*0.1+rad1;
     let newEd;
     let valid = true;
     do {
+      tries = tries-1;
       valid = true;
       newEd = {
         pos:{
@@ -109,10 +111,10 @@ function tick(){
   particles.forEach(function(e){
     e.pos.x = e.pos.x + e.vec.x;
     e.pos.y = e.pos.y + e.vec.y;
-    e.vec = calcVec(e.pos);
+    e.vec = checkPipeColide(e.pos, calcVec(e.pos));
   });
   particles = particles.filter(function(e){
-    return e.pos.x < canWid*0.9-15;
+    return e.pos.x < canWid*0.9-15 && e.born > Math.floor(Date.now() / 1000) - 20;
   });
   if(Math.random() <= 0.05 && debug.autoSpawn){ // 5% chance
     addParticle();
@@ -128,6 +130,7 @@ function tick(){
   }else{
     document.getElementById("sft").innerHTML = "Laminar";
   }
+  document.getElementById("fps").innerHTML = fps.getFPS();
 }
 
 function addParticle(){
@@ -137,7 +140,8 @@ function addParticle(){
   };
   particles.push({
     pos: pos,
-    vec: calcVec(pos)
+    vec: checkPipeColide(pos, calcVec(pos)),
+    born: Math.floor(Date.now() / 1000)
   });
 }
 
@@ -150,33 +154,27 @@ function calcVec(pos){
       y: 0
     };
   }else{
-
-    //This is all that still needs to be done
     for(let i = 0; i < eddies.length; i = i+1){
       let e = eddies[i];
       let dst = dist(pos, e.pos);
       if(dst < e.r1){
-        console.log("circ");
+        //Circle
         let theta = Math.acos((pos.x-e.pos.x)/dst);
         if(pos.y > e.pos.y){
           theta = (Math.PI*2) - theta;
         }
-        console.log(theta/Math.PI);
         return {
-          x: e.dir*mag*Math.sin(theta+0.1),
-          y: e.dir*mag*Math.cos(theta+0.1)
+          x: e.dir*mag*Math.sin(theta+(Math.random()*0.1)+0.05),
+          y: e.dir*mag*Math.cos(theta+(Math.random()*0.1)+0.05)
         };
       }else if(dst < e.r2){
-        console.log("push");
+        //Push around
         let theta = Math.acos((pos.x-e.pos.x)/dst);
         if(pos.y > e.pos.y){
           theta = (Math.PI*2) - theta;
         }
-        console.log(theta/Math.PI);
-        // debug.tick = false;
         if(Math.abs(theta-Math.PI) < Math.PI/8){
-          console.log("enter");
-          // debug.tick = false;
+          //push to enter eddie center
           if(theta > Math.PI){
             return {
               x: -mag*Math.sin(theta+0.4),
@@ -189,8 +187,7 @@ function calcVec(pos){
             };
           }
         }else if(Math.abs(theta) < Math.PI/4 || Math.abs(theta-(Math.PI*2)) < Math.PI/4){
-          console.log("esc");
-          // debug.tick = false;
+          //push to exit eddie
           if(theta > Math.PI){
             return {
               x: -mag*Math.sin(theta-0.5),
@@ -203,23 +200,22 @@ function calcVec(pos){
             };
           }
         }else{
-          console.log("go");
-          // debug.tick = false;
+          //Standard push
           if(theta > Math.PI){
             return {
-              x: -mag*Math.sin(theta+0.1),
-              y: -mag*Math.cos(theta+0.1)
+              x: -mag*Math.sin(theta+0.15),
+              y: -mag*Math.cos(theta+0.15)
             };
           }else{
             return {
-              x: mag*Math.sin(theta-0.1),
-              y: mag*Math.cos(theta-0.1)
+              x: mag*Math.sin(theta-0.15),
+              y: mag*Math.cos(theta-0.15)
             };
           }
         }
       }
     }
-    console.log("return");
+    //Not in contact with eddie
     return {
       x: mag,
       y: 0
@@ -255,3 +251,31 @@ function press(){
 function vMag(r){
   return ((press()-(press()*Math.pow(r, 2)))/(16*visc()));
 }
+
+function checkPipeColide(pos, vec){
+  if(pos.y+4+vec.y < (canHigh*0.1) || pos.y-4+vec.y > (canHigh*0.9)){
+    return {
+      x: vec.x,
+      y: 0
+    };
+  }else{
+    return vec;
+  }
+}
+
+///FPS module:
+var fps = {
+    startTime: 0,
+    frameNumber: 0,
+    getFPS: function() {
+        this.frameNumber++;
+        var d = new Date().getTime(),
+            currentTime = (d - this.startTime) / 1000,
+            result = Math.floor((this.frameNumber / currentTime));
+        if (currentTime > 1) {
+            this.startTime = new Date().getTime();
+            this.frameNumber = 0;
+        }
+        return result;
+    }
+};
