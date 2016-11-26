@@ -12,6 +12,8 @@ var eddies = [];
 
 var spawnRate = 0.05;
 
+var fps;
+
 var debug = {
   eddies : false,
   turb: false,
@@ -29,6 +31,7 @@ function init(){
   addParticle();
   drawFrame();
   setInterval(tick, 10);
+  setInterval(fpsUpdate, 1000);
   let tries = 50;
   for(let i = 0; i < 10 && tries > 0; i = i+1){
     let rad1 = Math.random()*canHigh*0.07+canHigh*0.07;
@@ -133,9 +136,8 @@ function tick(){
   }else{
     document.getElementById("sft").innerHTML = "Laminar";
   }
-  document.getElementById("fps").innerHTML = fps.getFPS();
+  fps = fpsCounter.getFPS();
 }
-
 function addParticle(){
   let pos = {
     x: canWid*0.1+15,
@@ -242,6 +244,10 @@ function vcrit(){
   return 5*visc();
 }
 
+function fpsUpdate(){
+  document.getElementById("fps").innerHTML = fps
+}
+
 // dp1-dp2
 function press(){
   let b = 4.458*Math.pow(10, -6);
@@ -267,7 +273,7 @@ function checkPipeColide(pos, vec){
 }
 
 ///FPS module:
-var fps = {
+var fpsCounter = {
     startTime: 0,
     frameNumber: 0,
     getFPS: function() {
