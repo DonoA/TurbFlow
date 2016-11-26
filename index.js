@@ -10,6 +10,8 @@ var particles = [];
 
 var eddies = [];
 
+var spawnRate = 0.05;
+
 var debug = {
   eddies : false,
   turb: false,
@@ -22,6 +24,7 @@ function init(){
   canHigh = window.innerHeight*0.5;
   document.getElementById("diag").width = canWid;
   document.getElementById("diag").height = canHigh;
+  document.getElementById("visc").defaultValue=70;
   pen = document.getElementById("diag").getContext("2d");
   addParticle();
   drawFrame();
@@ -116,15 +119,15 @@ function tick(){
   particles = particles.filter(function(e){
     return e.pos.x < canWid*0.9-15 && e.born > Math.floor(Date.now() / 1000) - 20;
   });
-  if(Math.random() <= 0.05 && debug.autoSpawn){ // 5% chance
+  if(Math.random() <= spawnRate && debug.autoSpawn){
     addParticle();
   }
   drawFrame();
-  document.getElementById("stemp").innerHTML = temp();
+  document.getElementById("stemp").innerHTML = temp().toFixed(0);
   document.getElementById("sflow").innerHTML = flow();
   document.getElementById("svisc").innerHTML = visc();
-  document.getElementById("spress").innerHTML = press();
-  document.getElementById("svcrit").innerHTML = vcrit();
+  document.getElementById("spress").innerHTML = press().toFixed(3);
+  document.getElementById("svcrit").innerHTML = vcrit().toFixed(2);
   if(vcrit() < vMag(0) || debug.turb){
     document.getElementById("sft").innerHTML = "Turbulent";
   }else{
@@ -224,7 +227,7 @@ function calcVec(pos){
 }
 
 function temp(){
-  return 500*(parseInt(document.getElementById("temp").value)/100);
+  return 800*(parseInt(document.getElementById("temp").value)/100);
 }
 
 function flow(){
@@ -236,7 +239,7 @@ function visc(){
 }
 
 function vcrit(){
-  return 10*visc();
+  return 5*visc();
 }
 
 // dp1-dp2
@@ -253,7 +256,7 @@ function vMag(r){
 }
 
 function checkPipeColide(pos, vec){
-  if(pos.y+4+vec.y < (canHigh*0.1) || pos.y-4+vec.y > (canHigh*0.9)){
+  if(pos.y-4+vec.y < (canHigh*0.1) || pos.y+4+vec.y > (canHigh*0.9)){
     return {
       x: vec.x,
       y: 0
