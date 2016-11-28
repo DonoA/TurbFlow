@@ -264,7 +264,7 @@ function vMag(r){
 function checkPipeColide(pos, vec){
   if(pos.y-4+vec.y < (canHigh*0.1) || pos.y+4+vec.y > (canHigh*0.9)){
     return {
-      x: vec.x,
+      x: vec.x + vec.y/4,
       y: 0
     };
   }else{
