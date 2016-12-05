@@ -55,10 +55,8 @@ function init(){
           valid = false;
         }
       });
-    } while(!valid || tries <= 0)
-    if(!valid){
-      eddies.push(newEd);
-    }
+    } while(!valid)
+    eddies.push(newEd);
   }
 }
 
